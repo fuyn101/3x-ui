@@ -1,0 +1,10 @@
+.git
+.github
+.vscode
+frontend/node_modules
+frontend/dist
+web/dist
+db
+cert
+pgdata
+*.log
