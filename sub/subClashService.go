@@ -24,6 +24,14 @@ type ClashConfig struct {
 	Proxies     []map[string]any `yaml:"proxies"`
 	ProxyGroups []map[string]any `yaml:"proxy-groups"`
 	Rules       []string         `yaml:"rules"`
+	GeoxURL     GeoxURLConfig    `yaml:"geox-url"`
+}
+
+type GeoxURLConfig struct {
+	GeoIP   string `yaml:"geoip"`
+	GeoSite string `yaml:"geosite"`
+	MMDB    string `yaml:"mmdb"`
+	ASN     string `yaml:"asn"`
 }
 
 func NewSubClashService(subService *SubService) *SubClashService {
@@ -86,22 +94,57 @@ func (s *SubClashService) GetClash(subId string, host string) (string, string, e
 		}
 	}
 
-	proxyNames := make([]string, 0, len(proxies)+1)
+	proxyNames := make([]string, 0, len(proxies))
 	for _, proxy := range proxies {
 		if name, ok := proxy["name"].(string); ok && name != "" {
 			proxyNames = append(proxyNames, name)
 		}
 	}
-	proxyNames = append(proxyNames, "DIRECT")
+
+	proxyChoices := append([]string{}, proxyNames...)
+	proxyChoices = append(proxyChoices, "DIRECT")
 
 	config := ClashConfig{
 		Proxies: proxies,
-		ProxyGroups: []map[string]any{{
-			"name":    "PROXY",
-			"type":    "select",
-			"proxies": proxyNames,
-		}},
-		Rules: []string{"MATCH,PROXY"},
+		ProxyGroups: []map[string]any{
+			{
+				"name":    "节点选择",
+				"type":    "select",
+				"proxies": proxyChoices,
+			},
+			{
+				"name":    "广告拦截",
+				"type":    "select",
+				"proxies": []string{"节点选择", "DIRECT", "REJECT"},
+			},
+			{
+				"name":    "翻墙下载steam等游戏难以连接的游戏",
+				"type":    "select",
+				"proxies": []string{"节点选择", "DIRECT"},
+			},
+			{
+				"name":    "广义需要翻墙的网站",
+				"type":    "select",
+				"proxies": []string{"节点选择", "DIRECT"},
+			},
+		},
+		Rules: []string{
+			"DOMAIN-SUFFIX,bing.com,节点选择",
+			"GEOSITE,category-ads-all,广告拦截",
+			"GEOSITE,category-games@cn,翻墙下载steam等游戏难以连接的游戏",
+			"GEOSITE,private,DIRECT",
+			"GEOIP,private,DIRECT",
+			"GEOSITE,geolocation-!cn,广义需要翻墙的网站",
+			"GEOSITE,cn,DIRECT",
+			"GEOIP,CN,DIRECT",
+			"MATCH,节点选择",
+		},
+		GeoxURL: GeoxURLConfig{
+			GeoIP:   "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/geoip.dat",
+			GeoSite: "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/geosite.dat",
+			MMDB:    "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country.mmdb",
+			ASN:     "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/GeoLite2-ASN.mmdb",
+		},
 	}
 
 	finalYAML, err := yaml.Marshal(config)
