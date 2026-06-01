@@ -11,7 +11,7 @@ import (
 func TestSyncInbound_PreservesCredentialsAcrossProtocols(t *testing.T) {
 	dbDir := t.TempDir()
 	t.Setenv("XUI_DB_FOLDER", dbDir)
-	if err := database.InitDB(filepath.Join(dbDir, "3x-ui.db")); err != nil {
+	if err := database.InitDB(filepath.Join(dbDir, "x-ui.db")); err != nil {
 		t.Fatalf("InitDB: %v", err)
 	}
 	t.Cleanup(func() { _ = database.CloseDB() })
@@ -22,7 +22,7 @@ func TestSyncInbound_PreservesCredentialsAcrossProtocols(t *testing.T) {
 	if err := db.Create(vlessInbound).Error; err != nil {
 		t.Fatalf("create vless inbound: %v", err)
 	}
-	hysteriaInbound := &model.Inbound{Tag: "hy-in", Enable: true, Port: 10002, Protocol: model.Hysteria2}
+	hysteriaInbound := &model.Inbound{Tag: "hy-in", Enable: true, Port: 10002, Protocol: model.Hysteria}
 	if err := db.Create(hysteriaInbound).Error; err != nil {
 		t.Fatalf("create hysteria inbound: %v", err)
 	}
@@ -74,7 +74,7 @@ func TestSyncInbound_PreservesCredentialsAcrossProtocols(t *testing.T) {
 func TestSyncInbound_AllowsClearingFlow(t *testing.T) {
 	dbDir := t.TempDir()
 	t.Setenv("XUI_DB_FOLDER", dbDir)
-	if err := database.InitDB(filepath.Join(dbDir, "3x-ui.db")); err != nil {
+	if err := database.InitDB(filepath.Join(dbDir, "x-ui.db")); err != nil {
 		t.Fatalf("InitDB: %v", err)
 	}
 	t.Cleanup(func() { _ = database.CloseDB() })

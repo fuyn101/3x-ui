@@ -6,14 +6,7 @@ on:
       - "**.go"
       - "go.mod"
       - "go.sum"
-      - "**.js"
-      - "**.mjs"
-      - "**.cjs"
-      - "**.ts"
-      - "**.html"
-      - "**.css"
-      - "frontend/package.json"
-      - "frontend/package-lock.json"
+      - "frontend/**"
       - ".nvmrc"
   push:
     branches:
@@ -22,14 +15,7 @@ on:
       - "**.go"
       - "go.mod"
       - "go.sum"
-      - "**.js"
-      - "**.mjs"
-      - "**.cjs"
-      - "**.ts"
-      - "**.html"
-      - "**.css"
-      - "frontend/package.json"
-      - "frontend/package-lock.json"
+      - "frontend/**"
       - ".nvmrc"
 
 permissions:
@@ -80,6 +66,12 @@ jobs:
         working-directory: frontend
       - name: Lint
         run: npm run lint
+        working-directory: frontend
+      - name: Typecheck
+        run: npm run typecheck
+        working-directory: frontend
+      - name: Test
+        run: npm test
         working-directory: frontend
       - name: Build
         run: npm run build

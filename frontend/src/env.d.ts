@@ -16,6 +16,7 @@ interface SubPageData {
   subClashUrl?: string;
   subTitle?: string;
   links?: string[];
+  emails?: string[];
   datepicker?: 'gregorian' | 'jalalian';
   downloadByte?: string | number;
   uploadByte?: string | number;
@@ -25,6 +26,7 @@ interface SubPageData {
 interface Window {
   X_UI_BASE_PATH?: string;
   X_UI_CUR_VER?: string;
+  X_UI_DB_TYPE?: string;
   __SUB_PAGE_DATA__?: SubPageData;
 }
 
